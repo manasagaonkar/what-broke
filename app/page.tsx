@@ -6,6 +6,21 @@ export default function Home() {
   const [errorInput, setErrorInput] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showResult, setShowResult] = useState(false);
+  const debugResult = {
+    category: "DEPENDENCY CONFLICT",
+    severity: "HIGH",
+    title: "Your dependencies cannot be resolved.",
+    rootCause:
+      "Your current package versions have incompatible peer dependency requirements.",
+    explanation:
+      "One or more packages in your application require versions that cannot exist together in the same dependency tree.",
+    possibleFixes: [
+      "Check the peer dependency requirements of the conflicting packages.",
+      "Upgrade or downgrade the package versions so they are compatible.",
+      "Remove and reinstall node_modules after changing dependency versions.",
+    ],
+    recommendedFix: "npm install react@19 react-dom@19",
+  };
 
   const handleAnalyze = () => {
     if (!errorInput.trim()) {
@@ -67,21 +82,85 @@ export default function Home() {
           {isAnalyzing ? "ANALYZING..." : "🔍 WHAT BROKE?"}
         </button>
 
-        {/* Temporary Result */}
+        {/* Debug Result */}
         {showResult && (
-          <section className="mt-12 w-full rounded-xl border border-gray-700 bg-[#161B22] p-6 text-left">
-            <p className="text-sm tracking-[0.2em] text-gray-500">
-              DEBUG RESULT
-            </p>
+          <section className="mt-12 w-full rounded-xl border border-gray-700 bg-[#161B22] p-8 text-left">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-medium tracking-[0.2em] text-gray-500">
+                DEBUG RESULT
+              </p>
 
-            <h3 className="mt-4 text-2xl font-bold">
-              Something in your application needs attention.
-            </h3>
+              <span className="rounded-full border border-red-500/30 bg-red-500/10 px-3 py-1 text-xs font-semibold text-red-400">
+                {debugResult.severity}
+              </span>
+            </div>
 
-            <p className="mt-4 leading-7 text-gray-400">
-              AI analysis will appear here. For now, this confirms that our
-              frontend state and analysis flow are working correctly.
-            </p>
+            <div className="mt-8">
+              <p className="text-sm font-semibold tracking-wide text-red-400">
+                🔴 {debugResult.category}
+              </p>
+
+              <h3 className="mt-3 text-3xl font-bold tracking-tight">
+                {debugResult.title}
+              </h3>
+            </div>
+
+            <div className="mt-10 space-y-8">
+              {/* Root Cause */}
+              <div>
+                <p className="text-xs font-medium tracking-[0.2em] text-gray-500">
+                  ROOT CAUSE
+                </p>
+
+                <p className="mt-3 leading-7 text-gray-300">
+                  {debugResult.rootCause}
+                </p>
+              </div>
+
+              {/* Why It Happened */}
+              <div>
+                <p className="text-xs font-medium tracking-[0.2em] text-gray-500">
+                  WHY THIS HAPPENED
+                </p>
+
+                <p className="mt-3 leading-7 text-gray-300">
+                  {debugResult.explanation}
+                </p>
+              </div>
+
+              {/* Possible Fixes */}
+              <div>
+                <p className="text-xs font-medium tracking-[0.2em] text-gray-500">
+                  POSSIBLE FIXES
+                </p>
+
+                <ol className="mt-4 space-y-3">
+                  {debugResult.possibleFixes.map((fix, index) => (
+                    <li
+                      key={fix}
+                      className="flex items-start gap-3 text-gray-300"
+                    >
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-600 text-xs text-gray-400">
+                        {index + 1}
+                      </span>
+
+                      <span className="leading-6">{fix}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+
+              {/* Recommended Fix */}
+              <div className="rounded-lg border border-gray-700 bg-[#0D1117] p-5">
+                <p className="text-xs font-medium tracking-[0.2em] text-gray-500">
+                  RECOMMENDED FIX
+                </p>
+
+                <code className="mt-4 block overflow-x-auto font-mono text-sm text-green-400">
+                  {debugResult.recommendedFix}
+                </code>
+              </div>
+            </div>
           </section>
         )}
       </section>
