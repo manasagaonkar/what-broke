@@ -5,27 +5,12 @@ import Navbar from "@/components/Navbar";
 import DebugInput from "@/components/DebugInput";
 import DebugResult from "@/components/DebugResult";
 import type { DebugResult as DebugResultType } from "@/types/debug";
+import { analyzeError } from "@/lib/errorAnalyzer";
 
 export default function Home() {
   const [errorInput, setErrorInput] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [showResult, setShowResult] = useState(false);
-
-  const debugResult: DebugResultType = {
-    category: "DEPENDENCY CONFLICT",
-    severity: "HIGH",
-    title: "Your dependencies cannot be resolved.",
-    rootCause:
-      "Your current package versions have incompatible peer dependency requirements.",
-    explanation:
-      "One or more packages in your application require versions that cannot exist together in the same dependency tree.",
-    possibleFixes: [
-      "Check the peer dependency requirements of the conflicting packages.",
-      "Upgrade or downgrade the package versions so they are compatible.",
-      "Remove and reinstall node_modules after changing dependency versions.",
-    ],
-    recommendedFix: "npm install react@19 react-dom@19",
-  };
+  const [result, setResult] = useState<DebugResultType | null>(null);
 
   const handleAnalyze = () => {
     if (!errorInput.trim()) {
@@ -34,11 +19,13 @@ export default function Home() {
     }
 
     setIsAnalyzing(true);
-    setShowResult(false);
+    setResult(null);
 
     setTimeout(() => {
+      const analysisResult = analyzeError(errorInput);
+
+      setResult(analysisResult);
       setIsAnalyzing(false);
-      setShowResult(true);
     }, 1500);
   };
 
@@ -66,7 +53,7 @@ export default function Home() {
           onAnalyze={handleAnalyze}
         />
 
-        {showResult && <DebugResult result={debugResult} />}
+        {result && <DebugResult result={result} />}
       </section>
     </main>
   );
