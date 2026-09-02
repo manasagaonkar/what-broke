@@ -17,7 +17,6 @@ export default function Home() {
       alert("Please paste an error first.");
       return;
     }
-
     setIsAnalyzing(true);
     setResult(null);
 
@@ -27,6 +26,15 @@ export default function Home() {
       setResult(analysisResult);
       setIsAnalyzing(false);
     }, 1500);
+  };
+  const handleCopyFix = () => {
+    if (!result) return;
+
+    navigator.clipboard.writeText(result.recommendedFix);
+  };
+  const handleTryAnother = () => {
+    setErrorInput("");
+    setResult(null);
   };
 
   return (
@@ -52,8 +60,13 @@ export default function Home() {
           onErrorChange={setErrorInput}
           onAnalyze={handleAnalyze}
         />
-
-        {result && <DebugResult result={result} />}
+        {result && (
+          <DebugResult
+            result={result}
+            onCopyFix={handleCopyFix}
+            onTryAnother={handleTryAnother}
+          />
+        )}
       </section>
     </main>
   );
