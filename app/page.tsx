@@ -79,6 +79,18 @@ export default function Home() {
     setErrorInput("");
     setResult(null);
   };
+  const handleClearHistory = () => {
+    const shouldClear = window.confirm(
+      "Are you sure you want to delete all debugging history?"
+    );
+
+    if (!shouldClear) {
+      return;
+    }
+
+    setHistory([]);
+    localStorage.removeItem(DEBUG_HISTORY_STORAGE_KEY);
+  };
 
   return (
     <main className="min-h-screen bg-[#0D1117] text-white">
@@ -119,6 +131,7 @@ export default function Home() {
         <DebugDiary
           history={history}
           onClose={() => setIsDiaryOpen(false)}
+          onClearHistory={handleClearHistory}
         />
       )}
     </main>
