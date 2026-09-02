@@ -7,3 +7,9 @@ export interface DebugResult {
   possibleFixes: string[];
   recommendedFix: string;
 }
+export interface DebugHistoryItem {
+  id: string;
+  error: string;
+  result: DebugResult;
+  createdAt: Date;
+}
