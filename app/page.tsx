@@ -44,31 +44,63 @@ export default function Home() {
     }
   }, []);
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     if (!errorInput.trim()) {
       alert("Please paste an error first.");
       return;
     }
+
     setIsAnalyzing(true);
     setResult(null);
 
-    setTimeout(() => {
-      const analysisResult = analyzeError(errorInput);
+    try {
+      // First, try the fast rule-based analyzer
+      const ruleBasedResult = analyzeError(errorInput);
 
-      setResult(analysisResult);
+      let finalResult = ruleBasedResult;
+
+      // If our rules don't recognize the error, ask AI
+      if (ruleBasedResult.category === "UNKNOWN ERROR") {
+        const response = await fetch("/api/analyze", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            error: errorInput,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("AI analysis failed.");
+        }
+
+        finalResult = await response.json();
+      }
+
+      // Keep the loading experience visible
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      setResult(finalResult);
 
       setHistory((previousHistory) => [
         ...previousHistory,
         {
           id: crypto.randomUUID(),
           error: errorInput,
-          result: analysisResult,
+          result: finalResult,
           createdAt: new Date(),
         },
       ]);
+    } catch (error) {
+      console.error("Analysis failed:", error);
 
+      alert(
+        "We couldn't analyze this error right now. Please try again."
+      );
+    } finally {
       setIsAnalyzing(false);
-    }, 1500);
+    }
   };
   const handleCopyFix = () => {
     if (!result) return;
