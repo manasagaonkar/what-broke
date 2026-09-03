@@ -102,11 +102,7 @@ export default function Home() {
       setIsAnalyzing(false);
     }
   };
-  const handleCopyFix = () => {
-    if (!result) return;
 
-    navigator.clipboard.writeText(result.recommendedFix);
-  };
   const handleTryAnother = () => {
     setErrorInput("");
     setResult(null);
@@ -122,6 +118,19 @@ export default function Home() {
 
     setHistory([]);
     localStorage.removeItem(DEBUG_HISTORY_STORAGE_KEY);
+  };
+
+  const handleCopyFix = async () => {
+    if (!result) return;
+
+    try {
+      await navigator.clipboard.writeText(result.recommendedFix);
+
+      alert("Recommended fix copied to clipboard! 📋");
+    } catch (error) {
+      console.error("Failed to copy fix:", error);
+      alert("Could not copy the fix. Please try again.");
+    }
   };
 
   return (
